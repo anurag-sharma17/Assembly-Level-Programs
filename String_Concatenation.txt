@@ -1,0 +1,47 @@
+section .data
+    string1 db 'Hello, ', 0
+    string2 db 'World!', 0
+    result db 50 dup(0)  ; Destination string with enough space
+
+section .text
+    global _start
+
+_start:
+    ; Initialize pointers
+    lea si, [string1]
+    lea di, [result]
+
+copy_string1:
+    ; Load a byte from string1 into AL
+    lodsb
+    ; Store AL into the result
+    stosb
+
+    ; Check for the null terminator of string1
+    cmp al, 0
+    jne copy_string1
+
+    ; Initialize pointers again for string2
+    lea si, [string2]
+
+copy_string2:
+    ; Load a byte from string2 into AL
+    lodsb
+    ; Store AL into the result
+    stosb
+
+    ; Check for the null terminator of string2
+    cmp al, 0
+    jne copy_string2
+
+    ; Display the concatenated string
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, result
+    mov edx, 50
+    int 0x80
+
+    ; Exit the program
+    mov eax, 1
+    mov ebx, 0
+    int 0x80

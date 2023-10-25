@@ -1,0 +1,14 @@
+section	.data
+section	.bss
+
+section	.text
+global	_start
+_start :
+
+mov al ,121	;
+mov  bl ,100
+add  al , bl
+
+mov eax , 1
+mov ebx , 0
+int  80h

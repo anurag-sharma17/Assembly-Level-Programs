@@ -1,0 +1,42 @@
+section .data
+    src_string db 'HELLO WORLD', 0
+    dst_string db 50 dup(0)  ; Destination string with enough space
+
+section .text
+    global _start
+
+_start:
+    ; Initialize pointers
+    lea si, [src_string]
+    lea di, [dst_string]
+
+convert_loop:
+    lodsb               ; Load a byte from source into AL
+    cmp al, 0           ; Check for null terminator
+    je done             ; If null, exit
+
+    ; Check if the character is an uppercase letter (A-Z)
+    cmp al, 'A'
+    jl not_uppercase
+    cmp al, 'Z'
+    jg not_uppercase
+
+    ; If it's uppercase, convert it to lowercase (a-z)
+    add al, 32
+not_uppercase:
+    stosb               ; Store the modified character in destination
+    jmp convert_loop    ; Continue with the next character
+
+done:
+    ; Display the lowercase string
+    mov ah, 0x0E        ; BIOS teletype function
+display_loop:
+    lodsb               ; Load a byte from destination string into AL
+    cmp al, 0           ; Check for null terminator
+    je exit             ; If null, exit
+    int 0x10            ; Display the character
+    jmp display_loop
+
+exit:
+    ; Halt the program
+    hlt

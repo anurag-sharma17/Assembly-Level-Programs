@@ -1,0 +1,43 @@
+section .data
+    src_string db 'This is the source string.', 0
+    dst_string db 50 dup(0)  ; Destination string with enough space
+
+section .text
+    global _start
+
+_start:
+    ; Set up the segment registers
+    mov ax, 0x07C0  ; Segment of bootloader or .com program
+    mov ds, ax
+    mov es, ax
+
+    ; Initialize pointers
+    lea si, [src_string]
+    lea di, [dst_string]
+
+    ; Copy the source string to the destination string
+copy_loop:
+    mov al, [si]        ; Load a byte from source string
+    mov [di], al        ; Store it in the destination string
+    inc si              ; Move to the next byte in source
+    inc di              ; Move to the next byte in destination
+    cmp al, 0           ; Check for the null terminator
+    jnz copy_loop       ; If not null, continue copying
+
+    ; Display the destination string
+    mov ah, 0x0E        ; BIOS teletype function
+display_loop:
+    mov al, [di]        ; Load a byte from destination string
+    cmp al, 0           ; Check for the null terminator
+    je done             ; If null, exit
+    int 0x10            ; Display the character
+    inc di              ; Move to the next byte in destination
+    jmp display_loop
+
+done:
+    ; Halt the program
+    hlt
+
+    ; Pad the rest of the bootloader with zeros
+    times 510-($-$$) db 0
+    dw 0xAA55  ; Boot signature

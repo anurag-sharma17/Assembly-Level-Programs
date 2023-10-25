@@ -1,0 +1,36 @@
+section .data
+    source_string db 'This is a sample string with some As.', 0
+    search_char db 'A'
+
+section .text
+    global _start
+
+_start:
+    ; Initialize pointers
+    lea di, [source_string]
+
+search_loop:
+    mov al, [di]        ; Load a byte from the source string
+    cmp al, 0           ; Check for null terminator
+    je not_found        ; If null, character not found
+    cmp al, [search_char] ; Compare with the search character
+    je found            ; If found, jump to found label
+    inc di              ; Move to the next character in the source string
+    jmp search_loop     ; Continue searching
+
+found:
+    ; Display a message indicating the character is found
+    mov ah, 0x0E        ; BIOS teletype function
+    mov al, 'A'         ; Character to display
+    int 0x10
+    jmp continue
+
+not_found:
+    ; Display a message indicating the character is not found
+    mov ah, 0x0E        ; BIOS teletype function
+    mov al, 'A'         ; Character to display
+    int 0x10
+
+continue:
+    ; Halt the program
+    hlt

@@ -1,0 +1,88 @@
+section .data
+    prompt1 db 'Enter the 16-bit dividend (in decimal): ', 0
+    prompt2 db 'Enter the 8-bit divisor (in decimal): ', 0
+    result_msg db 'Quotient: ', 0
+    result_msg2 db 'Remainder: ', 0
+    newline db 10, 0   ; Newline character for formatting
+
+section .bss
+    dividend resw 1      ; 16-bit dividend
+    divisor resb 1       ; 8-bit divisor
+    quotient resw 1      ; 16-bit quotient
+    remainder resb 1     ; 8-bit remainder
+
+section .text
+    global _start
+
+_start:
+    ; Display the prompt and read the 16-bit dividend
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, prompt1
+    mov edx, 38
+    int 0x80
+
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, dividend
+    mov edx, 2
+    int 0x80
+
+    ; Display the prompt and read the 8-bit divisor
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, prompt2
+    mov edx, 35
+    int 0x80
+
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, divisor
+    mov edx, 1
+    int 0x80
+
+    ; Load the dividend and divisor from memory
+    mov ax, [dividend]
+    mov al, [divisor]
+
+    ; Clear quotient and remainder registers
+    xor dx, dx
+    xor bx, bx
+
+    ; Perform division
+    div bl
+
+    ; Store the quotient and remainder in memory
+    mov [quotient], ax
+    mov [remainder], dl
+
+    ; Display the result (quotient)
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, result_msg
+    mov edx, 9
+    int 0x80
+
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, quotient
+    mov edx, 2
+    int 0x80
+
+    ; Display the result (remainder)
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, result_msg2
+    mov edx, 11
+    int 0x80
+
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, remainder
+    mov edx, 1
+    int 0x80
+
+    ; Exit the program
+    mov eax, 1
+    mov ebx, 0
+    int 0x80

@@ -1,0 +1,24 @@
+section	.data
+
+msg db	' Hello  World ' ,10	; assign msg  variable  with  your  message	
+msglen : equ   $−msg
+
+section	.text
+global	_start
+
+_start
+
+mov eax , 4	;	invoke  SYS WRITE ( kernel  opcode  4 )
+mov ebx , 1	; write to  the  STDOUT  f i l e
+mov ecx , msg	;  move  the  address  of  our  message  string	into ECX
+mov edx , msglen ; move the  address  of  our  message   length  into  ECX
+int  80h
+
+mov eax , 1	;	invoke  SYS EXIT ( kernel  opcode  1 )
+mov ebx , 0	; return  0  status  on   e x i t  −	' No Errors
+int  80h
+
+
+; ˜$ nasm − f	e l f −o   helloworld . o   helloworld . asm
+; ˜$  ld  −m e l f i 3 8 6 −o helloworld  helloworld . o
+; ˜$  . / helloworld

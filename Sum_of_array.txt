@@ -1,0 +1,60 @@
+section .data
+    num_array dw 1234h, 5678h, 9876h, 5432h   ; Sample array of 16-bit numbers
+    result dd 0                            ; 32-bit result initialized to 0
+    n equ 4                                ; Number of elements in the array
+    result_msg db 'The result of array addition is: ', 0
+
+section .bss
+    sum dd 0                                ; Variable to store the sum
+
+section .text
+global _start
+
+_start:
+    ; Initialize registers and pointers
+    mov esi, num_array
+    mov edi, result
+    xor eax, eax
+    xor edx, edx
+
+    ; Loop through the array and add the elements
+add_loop:
+    ; Load a 16-bit number from the array into ax
+    mov ax, [esi]
+
+    ; Add the 16-bit number to the result (32-bit)
+    add [edi], eax
+    adc edx, 0  ; Add with carry for the high word
+
+    ; Move to the next element
+    add esi, 2
+    add edi, 4
+
+    ; Decrement the counter
+    dec dword [n]
+
+    ; Check if we've reached the end of the array
+    jnz add_loop
+
+    ; Store the result in the 'sum' variable for display
+    mov [sum], edx
+    mov [sum+4], eax
+
+    ; Display the result message
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, result_msg
+    mov edx, 33
+    int 0x80
+
+    ; Display the 32-bit result
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, sum
+    mov edx, 8
+    int 0x80
+
+    ; Exit the program
+    mov eax, 1
+    mov ebx, 0
+    int 0x80

@@ -1,0 +1,36 @@
+section .data
+    string1 db 'Hello, World', 0
+    string2 db 'Hello, NASM', 0
+
+section .text
+    global _start
+
+_start:
+    ; Initialize pointers
+    lea si, [string1]
+    lea di, [string2]
+
+compare_loop:
+    lodsb               ; Load a byte from the first string into AL
+    scasb               ; Compare AL with the byte at DI (second string)
+    jne not_equal       ; If not equal, jump to not_equal label
+    cmp al, 0           ; Check for null terminator in the first string
+    je equal            ; If null, both strings are equal
+    jmp compare_loop    ; Continue comparing
+
+not_equal:
+    ; Display a message indicating the strings are not equal
+    mov ah, 0x0E        ; BIOS teletype function
+    mov al, 'N'         ; Character to display
+    int 0x10
+    jmp done
+
+equal:
+    ; Display a message indicating the strings are equal
+    mov ah, 0x0E        ; BIOS teletype function
+    mov al, 'Y'         ; Character to display
+    int 0x10
+
+done:
+    ; Halt the program
+    hlt

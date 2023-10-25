@@ -1,0 +1,44 @@
+section .data
+    input_string db 'Hello, World!', 0
+    output_string db 20 dup(0)
+
+section .bss
+    len equ $ - input_string
+
+section .text
+    global _start
+
+_start:
+    ; Initialize pointers
+    mov esi, input_string
+    mov edi, output_string
+    add edi, len - 1  ; Set the destination pointer to the end of the output string
+
+reverse_loop:
+    ; Load a byte from the source string into AL
+    lodsb
+    ; Store AL into the destination string
+    stosb
+
+    ; Check for the null terminator
+    cmp al, 0
+    je done
+
+    ; Move the destination pointer back by one
+    sub edi, 2
+
+    ; Continue reversing
+    jmp reverse_loop
+
+done:
+    ; Display the reversed string
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, output_string
+    mov edx, len
+    int 0x80
+
+    ; Exit the program
+    mov eax, 1
+    mov ebx, 0
+    int 0x80
